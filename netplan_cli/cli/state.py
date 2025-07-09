@@ -434,6 +434,9 @@ class SystemConfigState():
                               'Please start it.')
                 sys.exit(1)
             logging.debug('systemd-networkd.service is not active. Starting...')
+            if not utils.systemctl_is_installed('systemd-networkd.service'):
+                logging.error('systemd-networkd is required for \'netplan status\' functionality')
+                sys.exit(1)
             utils.systemctl('start', ['systemd-networkd.service'], True)
 
         # required data: iproute2 and sd-networkd can be expected to exist,
