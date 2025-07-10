@@ -531,6 +531,14 @@ netplan-global-state:
         self.assertEqual(1, e.exception.code)
         self.assertIn('systemd-networkd.service is masked', cm.output[0])
 
+    @patch('netplan_cli.cli.utils.systemctl_is_installed')
+    def test_call_cli_networkd_not_installed(self, is_installed_mock):
+        is_installed_mock.return_value = False
+        with self.assertLogs() as cm, self.assertRaises(SystemExit) as e:
+            self._call([])
+        self.assertEqual(1, e.exception.code)
+        self.assertIn('systemd-networkd is required for \'netplan status\' functionality', cm.output[0])
+
     @patch('netplan_cli.cli.state.NetplanConfigState.__init__')
     @patch('netplan_cli.cli.state_diff.NetplanDiffState.__init__')
     @patch('netplan_cli.cli.state_diff.NetplanDiffState.get_diff')
